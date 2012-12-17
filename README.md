@@ -15,7 +15,7 @@ CPAN ¤Ç¸ø³«¤µ¤ì¤Æ¤¤¤ë [Text::Hatena](http://search.cpan.org/dist/Text-Hatena/) ¤
 »ÈÍÑÊýË¡
 --------
 
-    var parser = new Hatena();
+    var parser = new TextHatena();
     parser.parse("*Hello world\n>>\nquote\n<<");
     alert(parser.html());
     // <div class="section">

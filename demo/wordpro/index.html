@@ -29,7 +29,7 @@ function init(){
 	source = document.getElementById("source");
 	sel = document.getElementById("css_switcher");
 
-	hatena = new Hatena({sectionanchor : "■"});
+	hatena = new TextHatena({sectionanchor : "■"});
 
 	edit.onkeyup = function(){if(realtime) convert();};
 

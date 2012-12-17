@@ -759,7 +759,13 @@ Hatena.Text.prototype = {
 }
 
 
-// Hatena クラスを公開
-global.Hatena = Hatena;
+// Hatena クラスを TextHatena として公開
+global.TextHatena = Hatena;
+
+// 後方互換のために Hatena としても公開
+// 将来的に削除する可能性があるので今後の利用は非推奨とする
+if (typeof global.Hatena == "undefined") {
+	global.Hatena = Hatena;
+}
 
 })(this);
