@@ -28,7 +28,7 @@ select{
 }
 </style>
 <script>
-var edit, preview, preview_html, sel;
+var edit, preview, preview_html, source, sel;
 var hatena;
 var realtime = true;
 
@@ -38,6 +38,7 @@ function init(){
 	edit = document.getElementById("edit");
 	preview = document.getElementById("preview");
 	preview_html = document.getElementById("preview_html");
+	source = document.getElementById("source");
 	sel = document.getElementById("css_switcher");
 
 	hatena = new Hatena({sectionanchor : "■"});
@@ -70,11 +71,14 @@ function convert(){
 function tab(type){
 	edit.style.display = (type == 0 || type == 1 ? "block" : "none");
 	preview.style.display = (type == 1 || type == 2 ? "block" : "none");
+	source.innerHTML = (type == 3 ? "<pre>" + hatena.html().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</pre>" : "");
+	source.style.display = (type == 3 ? "block" : "none");
 	edit.style.height = (type == 0 ? "40em" : "20em");
 
 	var html = (type == 0 ? 'コード | ' : '<a href="javascript:tab(0)" accesskey="1">コード</a> | ');
 	html += (type == 1 ? '分割 | ' : '<a href="javascript:tab(1)" accesskey="2">分割</a> | ');
 	html += (type == 2 ? 'プレビュー | ' : '<a href="javascript:tab(2)" accesskey="3">プレビュー</a> | ');
+	html += (type == 3 ? 'ソース' : '<a href="javascript:tab(3)" accesskey="4">ソース</a>');
 	if(type == 1){
 		html += '<br><input type="checkbox" id="realtime" accesskey="R" onclick="rtclick()" ' + (realtime ? 'checked ' : '') + '/><label for="realtime">リアルタイムプレビュー</label> ';
 		html += '<input type="button" id="preview_button" value="プレビュー(P)" accesskey="P" ' + (realtime ? 'style="visibility:hidden;"' : '') + ' onclick="convert()">';
@@ -115,6 +119,7 @@ function switchCSS(){
 はてな記法の変換は <a href="http://search.cpan.org/dist/Text-Hatena/">Text::Hatena</a> を JavaScript に移植した "text-hatena.js" を活用しています。
 
 **変更履歴
+|*2005/12/1|ソース機能追加 (HTMLソースを表示できます)|
 |*2005/11/21|はてな記法ワープロ完成|
 |*2005/11/13|text-hatena.js 移植開始|
 </textarea>
@@ -123,6 +128,7 @@ function switchCSS(){
 		<h2><span class="title">プレビュー</span></h2>
 		<div class="body" id="preview_html"></div>
 	</div>
+	<div class="day" id="source"></div>
 </div>
 <div class="sidebar">
 	<div class="hatena-module">
