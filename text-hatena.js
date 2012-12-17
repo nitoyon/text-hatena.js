@@ -1,9 +1,9 @@
 // from prototype.js
 Object.extend = function(destination, source) {
-  for (property in source) {
-	destination[property] = source[property];
-  }
-  return destination;
+	for (property in source) {
+		destination[property] = source[property];
+	}
+	return destination;
 }
 
 String.times = function(str, time){
@@ -29,31 +29,6 @@ String._unescapeHTML = function(s){
 	s = s.replace(/&quot;/g, "\"");
 	return s;
 }
-
-
-// Hatena::Hatena_HTMLFilter
-Hatena_HTMLFilter = function(args){
-	this.self = {
-		context : args["context"],
-		html : ''
-	};
-	this.init();
-}
-Hatena_HTMLFilter.prototype = {
-	init :function(){
-		// HTML::Parser を利用すべきなんだけど JavaScript ではなんとも...
-	},
-
-	parse : function(html){
-		var c = this.self.context;
-		this.self.html = c.self.texthandler(html, c);
-	},
-
-	html : function(){
-		return this.self.html;
-	}
-}
-
 
 // Hatena
 Hatena = function(args){
@@ -99,7 +74,7 @@ Hatena = function(args){
 }
 Hatena.prototype = {
 	parse : function(text){
-		this.self.context = new Hatena_Context({
+		this.self.context = new Hatena.Context({
 			text : text || "",
 			baseuri : this.self.baseuri,
 			permalink : this.self.permalink,
@@ -108,20 +83,20 @@ Hatena.prototype = {
 			texthandler : this.self.texthandler
 		});
 		var c = this.self.context;
-		var node = new Hatena_BodyNode();
+		var node = new Hatena.BodyNode();
 		node._new({
 			context : c,
 			ilevel : this.self.ilevel
 		});
 		node.parse();
-		var parser = new Hatena_HTMLFilter({
+		var parser = new Hatena.HTMLFilter({
 			context : c
 		});
 		parser.parse(c.html());
 		this.self.html = parser.html();
 
 		if (this.self.context.footnotes().length != 0) {
-			var node = new Hatena_FootnoteNode();
+			var node = new Hatena.FootnoteNode();
 			node._new({
 				context : this.self.context,
 				ilevel : this.self.ilevel
@@ -138,8 +113,31 @@ Hatena.prototype = {
 }
 
 
+// Hatena::Hatena.HTMLFilter
+Hatena.HTMLFilter = function(args){
+	this.self = {
+		context : args["context"],
+		html : ''
+	};
+	this.init();
+}
+Hatena.HTMLFilter.prototype = {
+	init :function(){
+		// HTML::Parser を利用すべきなんだけど JavaScript ではなんとも...
+	},
+
+	parse : function(html){
+		var c = this.self.context;
+		this.self.html = c.self.texthandler(html, c);
+	},
+
+	html : function(){
+		return this.self.html;
+	}
+}
+
 // Hatena::Context
-Hatena_Context = function(args){
+Hatena.Context = function(args){
 	this.self = {
 		text : args["text"],
 		baseuri : args["baseuri"],
@@ -155,7 +153,8 @@ Hatena_Context = function(args){
 	};
 	this.init();
 }
-Hatena_Context.prototype = {
+
+Hatena.Context.prototype = {
 	init : function() {
 		this.self.text = this.self.text.replace(/\r/g, "");
 		this.self.lines = this.self.text.split('\n');
@@ -216,8 +215,8 @@ Hatena_Context.prototype = {
 
 
 // Hatena::Node
-Hatena_Node = function(){}
-Hatena_Node.prototype = {
+Hatena.Node = function(){}
+Hatena.Node.prototype = {
 	html : "", 
 	pattern : "",
 
@@ -243,12 +242,12 @@ Hatena_Node.prototype = {
 
 
 // Hatena::BodyNode
-Hatena_BodyNode = function(){};
-Hatena_BodyNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.BodyNode = function(){};
+Hatena.BodyNode.prototype = Object.extend(new Hatena.Node(), {
 	parse : function(){
 		var c = this.self.context;
 		while (this.self.context.hasnext()) {
-			var node = new Hatena_SectionNode();
+			var node = new Hatena.SectionNode();
 			node._new({
 				context : c,
 				ilevel : this.self.ilevel
@@ -260,8 +259,8 @@ Hatena_BodyNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::BrNode
-Hatena_BrNode = function(){};
-Hatena_BrNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.BrNode = function(){};
+Hatena.BrNode.prototype = Object.extend(new Hatena.Node(), {
 	parse : function(){
 		var c = this.self.context;
 		var l = c.shiftline();
@@ -277,13 +276,13 @@ Hatena_BrNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::CDataNode
-Hatena_CDataNode = function(){};
-Hatena_CDataNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.CDataNode = function(){};
+Hatena.CDataNode.prototype = Object.extend(new Hatena.Node(), {
 	parse : function(){
 		var c = this.self.context;
 		var t = String.times("\t", this.self.ilevel);
 		var l = c.shiftline();
-		var text = new Hatena_Text();
+		var text = new Hatena.Text();
 		text._new({context : c});
 		text.parse(l);
 		l = text.html();
@@ -293,8 +292,8 @@ Hatena_CDataNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::DlNode
-Hatena_DlNode = function(){};
-Hatena_DlNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.DlNode = function(){};
+Hatena.DlNode.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^\:((?:<[^>]+>|\[\].+?\[\]|\[[^\]]+\]|\[\]|[^\:<\[]+)+)\:(.+)$/;
 	},
@@ -319,8 +318,8 @@ Hatena_DlNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::FootnoteNode
-Hatena_FootnoteNode = function(){};
-Hatena_FootnoteNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.FootnoteNode = function(){};
+Hatena.FootnoteNode.prototype = Object.extend(new Hatena.Node(), {
 	html : "",
 
 	parse : function(){
@@ -332,7 +331,7 @@ Hatena_FootnoteNode.prototype = Object.extend(new Hatena_Node(), {
 
 		this.self.html += t + '<div class="footnote">\n';
 		var num = 0;
-		var text = new Hatena_Text();
+		var text = new Hatena.Text();
 		text._new({context : c});
 		for(var i = 0; i < c.self.footnotes.length; i++) {
 			var note = c.self.footnotes[i];
@@ -348,8 +347,8 @@ Hatena_FootnoteNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::H3Node
-Hatena_H3Node = function(){};
-Hatena_H3Node.prototype = Object.extend(new Hatena_Node(), {
+Hatena.H3Node = function(){};
+Hatena.H3Node.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^\*(?:(\d{9,10}|[a-zA-Z]\w*)\*)?((?:\[[^\:\[\]]+\])+)?(.*)$/;
 	},
@@ -403,8 +402,8 @@ Hatena_H3Node.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::H4Node
-Hatena_H4Node = function(){};
-Hatena_H4Node.prototype = Object.extend(new Hatena_Node(), {
+Hatena.H4Node = function(){};
+Hatena.H4Node.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^\*\*((?:[^\*]).*)$/;
 	},
@@ -421,8 +420,8 @@ Hatena_H4Node.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::H5Node
-Hatena_H5Node = function(){};
-Hatena_H5Node.prototype = Object.extend(new Hatena_Node(), {
+Hatena.H5Node = function(){};
+Hatena.H5Node.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^\*\*\*((?:[^\*]).*)$/;
 	},
@@ -439,8 +438,8 @@ Hatena_H5Node.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::ListNode
-Hatena_ListNode = function(){};
-Hatena_ListNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.ListNode = function(){};
+Hatena.ListNode.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^([\-\+]+)([^>\-\+].*)$/;
 	},
@@ -458,7 +457,7 @@ Hatena_ListNode.prototype = Object.extend(new Hatena_Node(), {
 			if(!l.match(this.self.pattern)) break;
 			if (RegExp.$1.length > this.self.llevel) {
 				//c.htmllines(t + "\t<li>"); bug??
-				var node = new Hatena_ListNode();
+				var node = new Hatena.ListNode();
 				node._new({
 					context : this.self.context,
 					ilevel : this.self.ilevel
@@ -478,13 +477,13 @@ Hatena_ListNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::PNode
-Hatena_PNode = function(){};
-Hatena_PNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.PNode = function(){};
+Hatena.PNode.prototype = Object.extend(new Hatena.Node(), {
 	parse :function(){
 		var c = this.self.context;
 		var t = String.times("\t", this.self.ilevel);
 		var l = c.shiftline();
-		var text = new Hatena_Text();
+		var text = new Hatena.Text();
 		text._new({context : c});
 		text.parse(l);
 		l = text.html();
@@ -494,8 +493,8 @@ Hatena_PNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::PreNode
-Hatena_PreNode = function(){};
-Hatena_PreNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.PreNode = function(){};
+Hatena.PreNode.prototype = Object.extend(new Hatena.Node(), {
 	init :function(){
 		this.self.pattern = /^>\|$/;
 		this.self.endpattern = /(.*)\|<$/;
@@ -527,8 +526,8 @@ Hatena_PreNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::SuperpreNode
-Hatena_SuperpreNode = function(){};
-Hatena_SuperpreNode.prototype = Object.extend(new Hatena_PreNode(), {
+Hatena.SuperpreNode = function(){};
+Hatena.SuperpreNode.prototype = Object.extend(new Hatena.PreNode(), {
 	init : function(){
 		this.self.pattern = /^>\|\|$/;
 		this.self.endpattern = /^\|\|<$/;
@@ -543,8 +542,8 @@ Hatena_SuperpreNode.prototype = Object.extend(new Hatena_PreNode(), {
 
 
 // Hatena::SuperpreNode
-Hatena_TableNode = function(){};
-Hatena_TableNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.TableNode = function(){};
+Hatena.TableNode.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.pattern = /^\|([^\|]*\|(?:[^\|]*\|)+)$/;
 	},
@@ -578,8 +577,8 @@ Hatena_TableNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::Section
-Hatena_SectionNode = function(){};
-Hatena_SectionNode.prototype = Object.extend(new Hatena_Node(), {
+Hatena.SectionNode = function(){};
+Hatena.SectionNode.prototype = Object.extend(new Hatena.Node(), {
 	init : function(){
 		this.self.childnode = ["h5", "h4", "h3", "blockquote", "dl", "list", "pre", "superpre", "table", "tagline", "tag"];
 		this.self.startstring = '<div class="section">';
@@ -597,7 +596,7 @@ Hatena_SectionNode.prototype = Object.extend(new Hatena_Node(), {
 			var node = this._findnode(l);
 			if(node == null) return;
 			// TODO: ref == instanceof ???
-			//if (ref(node) eq 'Hatena_H3Node') {
+			//if (ref(node) eq 'Hatena.H3Node') {
 			//	if(this.self.started++) break;
 			//}
 			node.parse();
@@ -616,7 +615,7 @@ Hatena_SectionNode.prototype = Object.extend(new Hatena_Node(), {
 		for(var i = 0; i <  this.self.childnode.length; i++) {
 			var node = this.self.childnode[i];
 			if(invalid[node]) continue;
-			var mod = 'Hatena_' + node.charAt(0).toUpperCase() + node.substr(1).toLowerCase() + 'Node';
+			var mod = 'Hatena.' + node.charAt(0).toUpperCase() + node.substr(1).toLowerCase() + 'Node';
 			var n = eval("new "+ mod +"()");
 			n._new(nodeoption);
 			this.self.child_node_refs.push(n);
@@ -637,15 +636,15 @@ Hatena_SectionNode.prototype = Object.extend(new Hatena_Node(), {
 			ilevel : this.self.ilevel + 1
 		};
 		if (l.length == 0) {
-			var node = new Hatena_BrNode(nodeoption);
+			var node = new Hatena.BrNode(nodeoption);
 			node._new(nodeoption);
 			return node;
 		} else if (this.self.context.noparagraph()) {
-			var node = new Hatena_CDataNode();
+			var node = new Hatena.CDataNode();
 			node._new(nodeoption);
 			return node;
 		} else {
-			var node = new Hatena_PNode;
+			var node = new Hatena.PNode;
 			node._new(nodeoption);
 			return node;
 		}
@@ -654,8 +653,8 @@ Hatena_SectionNode.prototype = Object.extend(new Hatena_Node(), {
 
 
 // Hatena::BrockquoteNode
-Hatena_BlockquoteNode = function(){};
-Hatena_BlockquoteNode.prototype = Object.extend(new Hatena_SectionNode(), {
+Hatena.BlockquoteNode = function(){};
+Hatena.BlockquoteNode.prototype = Object.extend(new Hatena.SectionNode(), {
 	init : function(){
 		this.self.pattern = /^>>$/;
 		this.self.endpattern = /^<<$/;
@@ -687,8 +686,8 @@ Hatena_BlockquoteNode.prototype = Object.extend(new Hatena_SectionNode(), {
 
 
 // Hatena::TagNode
-Hatena_TagNode = function(){};
-Hatena_TagNode.prototype = Object.extend(new Hatena_SectionNode(), {
+Hatena.TagNode = function(){};
+Hatena.TagNode.prototype = Object.extend(new Hatena.SectionNode(), {
 	init : function(){
 		this.self.pattern = /^>(<.*)$/;
 		this.self.endpattern = /^(.*>)<$/;
@@ -721,7 +720,7 @@ Hatena_TagNode.prototype = Object.extend(new Hatena_SectionNode(), {
 	},
 
 	_parse_text : function(l){
-		var text = new Hatena_Text();
+		var text = new Hatena.Text();
 		text._new({context : this.self.context});
 		text.parse(l);
 		return text.html();
@@ -730,8 +729,8 @@ Hatena_TagNode.prototype = Object.extend(new Hatena_SectionNode(), {
 
 
 // Hatena::TaglineNode
-Hatena_TaglineNode = function(){};
-Hatena_TaglineNode.prototype = Object.extend(new Hatena_SectionNode(), {
+Hatena.TaglineNode = function(){};
+Hatena.TaglineNode.prototype = Object.extend(new Hatena.SectionNode(), {
 	init : function(){
 		this.self.pattern = /^>(<.*>)<$/;
 		this.self.child_node_refs = Array();
@@ -748,8 +747,8 @@ Hatena_TaglineNode.prototype = Object.extend(new Hatena_SectionNode(), {
 
 
 // Hatena::Text
-Hatena_Text = function(){}
-Hatena_Text.prototype = {
+Hatena.Text = function(){}
+Hatena.Text.prototype = {
 	_new : function(args){
 		this.self = {
 			context : args["context"],
@@ -765,9 +764,3 @@ Hatena_Text.prototype = {
 
 	html : function(){return this.self.html;}
 }
-
-
-/*var h = new Hatena();
-h.parse("hoge((a))aaa))aaaa\n><a>hoge</a><aaa");
-WScript.echo(h.html());
-*/
