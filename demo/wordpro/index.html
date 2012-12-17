@@ -51,7 +51,14 @@ function init(){
 function convert(){
 	if(edit == null || preview == null) return;
 
-	var wiki = String._unescapeHTML(edit.value);
+	var unescapeHTML = function(s){
+		s = s.replace(/&amp;/g, "&");
+		s = s.replace(/&lt;/g, "<");
+		s = s.replace(/&gt;/g, ">");
+		s = s.replace(/&quot;/g, "\"");
+		return s;
+	}
+	var wiki = unescapeHTML(edit.value);
 	hatena.parse(wiki);
 	preview_html.innerHTML = hatena.html();
 }
