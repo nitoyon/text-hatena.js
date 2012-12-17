@@ -41,7 +41,7 @@ Hatena_HTMLFilter = function(args){
 }
 Hatena_HTMLFilter.prototype = {
 	init :function(){
-		// HTML::Parser ¤òÍøÍÑ¤¹¤Ù¤­¤Ê¤ó¤À¤±¤É JavaScript ¤Ç¤Ï¤Ê¤ó¤È¤â...
+		// HTML::Parser ã‚’åˆ©ç”¨ã™ã¹ããªã‚“ã ã‘ã© JavaScript ã§ã¯ãªã‚“ã¨ã‚‚...
 	},
 
 	parse : function(html){
@@ -367,9 +367,9 @@ Hatena_H3Node.prototype = Object.extend(new Hatena_Node(), {
 		var t = String.times("\t", this.self.ilevel);
 		var sa = c.self.sectionanchor;
 
-		/* TODO: ¥«¥Æ¥´¥ê¤ÏÌ¤ÂĞ±ş
+		/* TODO: ã‚«ãƒ†ã‚´ãƒªã¯æœªå¯¾å¿œ
 		if (cat) {
-			if(cat.match(/\[([^\:\[\]]+)\]/)){ // ·«¤êÊÖ¤·¤Ç¤­¤Ê¤¤¤Ê¤¡...
+			if(cat.match(/\[([^\:\[\]]+)\]/)){ // ç¹°ã‚Šè¿”ã—ã§ããªã„ãªã...
 				var w = RegExp.$1;
 				var ew = escape(RegExp.$1);
 				cat = cat.replace(/\[([^\:\[\]]+)\]/, '[<a class="sectioncategory" href="' + b + '?word=' + ew + '">' + w + '</a>]');
@@ -382,7 +382,7 @@ Hatena_H3Node.prototype = Object.extend(new Hatena_Node(), {
 	},
 
 	_formatname : function(name){
-		/* TODO: »ş´Ö¤âÌ¤ÂĞ±ş¡£É½¼¨»ş¤Î»ş´Ö¤¬É½¼¨¤µ¤ì¤Æ¤·¤Ş¤¦...
+		/* TODO: æ™‚é–“ã‚‚æœªå¯¾å¿œã€‚è¡¨ç¤ºæ™‚ã®æ™‚é–“ãŒè¡¨ç¤ºã•ã‚Œã¦ã—ã¾ã†...
 		if (name && name.match(/^\d{9,10}$/)) {
 			var m = sprintf('%02d', (localtime($name))[1]);
 			var h = sprintf('%02d', (localtime($name))[2]);

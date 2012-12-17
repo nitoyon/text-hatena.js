@@ -2,7 +2,8 @@
 <head>
 	<link rel="stylesheet" type="text/css" id="css" />
 	<script type="text/javascript" src="../../text-hatena.js"></script>
-	<title>�ϤƤʵ�ˡ��ץ�</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>はてな記法ワープロ</title>
 	<!--
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:foaf="http://xmlns.com/foaf/0.1/">
 <rdf:Description rdf:about="http://tech.nitoyon.com/javascript/application/text-hatena/hatenawordpro/">
@@ -41,7 +42,7 @@ function init(){
 	source = document.getElementById("source");
 	sel = document.getElementById("css_switcher");
 
-	hatena = new Hatena({sectionanchor : "��"});
+	hatena = new Hatena({sectionanchor : "■"});
 
 	edit.onkeyup = function(){if(realtime) convert();};
 
@@ -75,13 +76,13 @@ function tab(type){
 	source.style.display = (type == 3 ? "block" : "none");
 	edit.style.height = (type == 0 ? "40em" : "20em");
 
-	var html = (type == 0 ? '������ | ' : '<a href="javascript:tab(0)" accesskey="1">������</a> | ');
-	html += (type == 1 ? 'ʬ�� | ' : '<a href="javascript:tab(1)" accesskey="2">ʬ��</a> | ');
-	html += (type == 2 ? '�ץ�ӥ塼 | ' : '<a href="javascript:tab(2)" accesskey="3">�ץ�ӥ塼</a> | ');
-	html += (type == 3 ? '������' : '<a href="javascript:tab(3)" accesskey="4">������</a>');
+	var html = (type == 0 ? 'コード | ' : '<a href="javascript:tab(0)" accesskey="1">コード</a> | ');
+	html += (type == 1 ? '分割 | ' : '<a href="javascript:tab(1)" accesskey="2">分割</a> | ');
+	html += (type == 2 ? 'プレビュー | ' : '<a href="javascript:tab(2)" accesskey="3">プレビュー</a> | ');
+	html += (type == 3 ? 'ソース' : '<a href="javascript:tab(3)" accesskey="4">ソース</a>');
 	if(type == 1){
-		html += '<br><input type="checkbox" id="realtime" accesskey="R" onclick="rtclick()" ' + (realtime ? 'checked ' : '') + '/><label for="realtime">�ꥢ�륿����ץ�ӥ塼</label> ';
-		html += '<input type="button" id="preview_button" value="�ץ�ӥ塼(P)" accesskey="P" ' + (realtime ? 'style="visibility:hidden;"' : '') + ' onclick="convert()">';
+		html += '<br><input type="checkbox" id="realtime" accesskey="R" onclick="rtclick()" ' + (realtime ? 'checked ' : '') + '/><label for="realtime">リアルタイムプレビュー</label> ';
+		html += '<input type="button" id="preview_button" value="プレビュー(P)" accesskey="P" ' + (realtime ? 'style="visibility:hidden;"' : '') + ' onclick="convert()">';
 	}
 	document.getElementById("tab").innerHTML = html;
 }
@@ -106,48 +107,48 @@ function switchCSS(){
 </script>
 </head>
 <body>
-<h1>�ϤƤʵ�ˡ��ץ�</h1>
+<h1>はてな記法ワープロ</h1>
 <div class="hatena-body">
 <div class="main">
 	<div class="calendar" id="tab"></div>	
 
-	<textarea cols="20" rows="15" id="edit">*�ϤƤʵ�ˡJavaScript
-�ϤƤʵ�ˡ��ץ��� JavaScript �ʤ�ǤϤ��������������������ʥߥå��ʥ�ץ��Ǥ���
+	<textarea cols="20" rows="15" id="edit">*はてな記法JavaScript
+はてな記法ワープロは JavaScript ならではの利点を生かしたダイナミックなワープロです。
 
-��˿������Ϥ��ƤߤƤ���������¨�¤˽��ϲ��̤�ȿ�Ǥ���ޤ�((Windows �� IE6 ����� Firefox 1.0 �ǤΤ߳�ǧ���Ƥ��ޤ�))��
+試しに色々入力してみてください。即座に出力画面が反映されます((Windows 版 IE6 および Firefox 1.0 でのみ確認しています))。
 
-�ϤƤʵ�ˡ���Ѵ��� <a href="http://search.cpan.org/dist/Text-Hatena/">Text::Hatena</a> �� JavaScript �˰ܿ����� "text-hatena.js" ����Ѥ��Ƥ��ޤ���
+はてな記法の変換は <a href="http://search.cpan.org/dist/Text-Hatena/">Text::Hatena</a> を JavaScript に移植した "text-hatena.js" を活用しています。
 
-**�ѹ�����
-|*2005/12/1|��������ǽ�ɲ� (HTML��������ɽ���Ǥ��ޤ�)|
-|*2005/11/21|�ϤƤʵ�ˡ��ץ�����|
-|*2005/11/13|text-hatena.js �ܿ�����|
+**変更履歴
+|*2005/12/1|ソース機能追加 (HTMLソースを表示できます)|
+|*2005/11/21|はてな記法ワープロ完成|
+|*2005/11/13|text-hatena.js 移植開始|
 </textarea>
 
 	<div class="day" id="preview">
-		<h2><span class="title">�ץ�ӥ塼</span></h2>
+		<h2><span class="title">プレビュー</span></h2>
 		<div class="body" id="preview_html"></div>
 	</div>
 	<div class="day" id="source"></div>
 </div>
 <div class="sidebar">
 	<div class="hatena-module">
-		<div class="hatena-moduletitle">���Υڡ����ˤĤ���</div>
+		<div class="hatena-moduletitle">このページについて</div>
 		<div class="hatena-modulebody">
 			<div class="hatena-profile">
-			<p><a href="http://hatenadiary.g.hatena.ne.jp/keyword/%E3%81%AF%E3%81%A6%E3%81%AA%E8%A8%98%E6%B3%95%E4%B8%80%E8%A6%A7">�ϤƤʵ�ˡ</a>��ꥢ�륿����˻�Ǥ��ޤ���</p>
-			<p>�ޤ���text-hatena.js �Υǥ�ڡ����Ǥ⤢��ޤ���text-hatena.js �ˤĤ��Ƥ�<a href="http://tech.nitoyon.com/javascript/application/texthatena/download.html">�֥����Υ���ȥ�</a>�ء�</p>
+			<p><a href="http://hatenadiary.g.hatena.ne.jp/keyword/%E3%81%AF%E3%81%A6%E3%81%AA%E8%A8%98%E6%B3%95%E4%B8%80%E8%A6%A7">はてな記法</a>をリアルタイムに試験できます。</p>
+			<p>また、text-hatena.js のデモページでもあります。text-hatena.js については<a href="http://tech.nitoyon.com/javascript/application/texthatena/download.html">ブログのエントリ</a>へ。</p>
 			</div>
 		</div>
 	</div>
 
 	<div class="hatena-module">
-		<div class="hatena-moduletitle">����������ڤ��ؤ�</div>
+		<div class="hatena-moduletitle">スタイルの切り替え</div>
 		<div class="hatena-modulebody">
-			<p>�ϤƤʤ�ɸ��⥸�塼���CSS��ƥ��ȤǤ��ޤ���</p>
+			<p>はてなの標準モジュールのCSSをテストできます。</p>
 			<form>
 <select name="theme" onchange="javascript:switchCSS()" id="css_switcher" accesskey="S">
-	<option value="">����ʤ�</option>
+	<option value="">指定なし</option>
 	<option value="3minutes">3minutes</option>
 	<option value="3pink">3pink</option>
 	<option value="270b">270b</option>
@@ -490,41 +491,41 @@ function switchCSS(){
 	</div>
 
 	<div class="hatena-module">
-		<div class="hatena-moduletitle">�б����Ƥ��뵭ˡ</div>
+		<div class="hatena-moduletitle">対応している記法</div>
 		<div class="hatena-modulebody">
 			<ul class="hatena-antenna">
-				<li><span title="*����">���Ф���ˡ</span>
-				<li><span title="*name*����">name°���դ����Ф���ˡ</span>
-				<li><span title="**����">�����Ф���ˡ</span>
-				<li><span title="***����">�������Ф���ˡ</span>
-				<li><span title="-����, --����, +����, ++����">�ꥹ�ȵ�ˡ</span>
-				<li><span title=":����:����">����ꥹ�ȵ�ˡ</span>
-				<li><span title="| ���� | ���� |, | *���� |">ɽ�Ȥߵ�ˡ</span>
-				<li><span title=">> ���� <<">���ѵ�ˡ</span>
-				<li><span title=">| ���� |<">pre��ˡ</span>
-				<li><span title=">|| ���� ||<">�����ѡ�pre��ˡ</span>
-				<li><span title="(( ���� ))">������ˡ</span>
-				<li><span title="(Ϣ³��������ι�2��)">���Ե�ˡ</span>
-				<li><span title=">< ���� ><">p������ߵ�ˡ</span>
+				<li><span title="*～～">見出し記法</span>
+				<li><span title="*name*～～">name属性付き見出し記法</span>
+				<li><span title="**～～">小見出し記法</span>
+				<li><span title="***～～">小々見出し記法</span>
+				<li><span title="-～～, --～～, +～～, ++～～">リスト記法</span>
+				<li><span title=":～～:～～">定義リスト記法</span>
+				<li><span title="| ～～ | ～～ |, | *～～ |">表組み記法</span>
+				<li><span title=">> ～～ <<">引用記法</span>
+				<li><span title=">| ～～ |<">pre記法</span>
+				<li><span title=">|| ～～ ||<">スーパーpre記法</span>
+				<li><span title="(( ～～ ))">脚注記法</span>
+				<li><span title="(連続した空白の行2つ)">改行記法</span>
+				<li><span title=">< ～～ ><">pタグ停止記法</span>
 			</ul>
 		</div>
 	</div>
 
 	<div class="hatena-module">
-		<div class="hatena-moduletitle">��󥯽�</div>
+		<div class="hatena-moduletitle">リンク集</div>
 		<div class="hatena-modulebody">
 			<ul class="hatena-antenna">
-				<li><a href="/javascript/application/texthatena/download.html">text-hatena.js ����</a></li>
-				<li><a href="/javascript/application/racing/1.html">Google Maps �ǥ졼����</a></li>
-				<li><a Href="http://ck.jp.ap.valuecommerce.com/servlet/referral?sid=2102799&pid=871121915" target="_blank" ><img Src="http://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=2102799&pid=871121915" height="1" width="1" Border="0">All About��JavaScript</a>
+				<li><a href="/javascript/application/texthatena/download.html">text-hatena.js 公開</a></li>
+				<li><a href="/javascript/application/racing/1.html">Google Maps でレーシング</a></li>
+				<li><a Href="http://ck.jp.ap.valuecommerce.com/servlet/referral?sid=2102799&pid=871121915" target="_blank" ><img Src="http://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=2102799&pid=871121915" height="1" width="1" Border="0">All About　JavaScript</a>
 			</ul>
 		</div>
 	</div>
 
 	<div class="hatena-module">
-		<div class="hatena-moduletitle">�ϤƤ��ꤲ���ϣ�</div>
+		<div class="hatena-moduletitle">はてな投げ銭ＯＫ</div>
 		<div class="hatena-modulebody">
-			<center><img src="hatena_nagesen.gif" width="88" height="31" alt="�ϤƤ��ꤲ���ϣ�" /></center>
+			<center><img src="hatena_nagesen.gif" width="88" height="31" alt="はてな投げ銭ＯＫ" /></center>
 		</div>
 	</div>
 </div>
