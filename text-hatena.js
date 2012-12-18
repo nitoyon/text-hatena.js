@@ -98,6 +98,7 @@ Hatena.prototype = {
 			this.self.html += "\n";
 			this.self.html += node.self.html;
 		}
+		return this.self.html;
 	}, 
 
 	html : function(){
