@@ -530,7 +530,7 @@ Hatena.SuperpreNode.prototype = extend(new Hatena.PreNode(), {
 	},
 
 	escape_pre : function(s){
-		return String.escapeHTML(s);
+		return escapeHTML(s);
 	}
 })
 
@@ -655,6 +655,7 @@ Hatena.BlockquoteNode.prototype = extend(new Hatena.SectionNode(), {
 		this.self.childnode = ["h4", "h5", "blockquote", "dl", "list", "pre", "superpre", "table"];//, "tagline", "tag"];
 		this.self.startstring = "<blockquote>";
 		this.self.endstring = "</blockquote>";
+		this.self.child_node_refs = [];
 	},
 
 	parse : function(){
