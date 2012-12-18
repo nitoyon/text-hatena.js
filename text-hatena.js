@@ -769,3 +769,4 @@ if (typeof global.Hatena == "undefined") {
 }
 
 })(this);
+
