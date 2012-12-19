@@ -1,7 +1,7 @@
 (function(global) {
 
 var extend = function(destination, source) {
-	for (property in source) {
+	for (var property in source) {
 		destination[property] = source[property];
 	}
 	return destination;
