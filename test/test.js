@@ -1,3 +1,11 @@
+test("workaround for grunt qunit failure in Windows", function() {
+	expect(0);
+	stop();
+	setTimeout(function() {
+		start();
+	}, 13);
+});
+
 test( "dl test", function() {
 	text_equal(":a:b", [
 		"<dl>",

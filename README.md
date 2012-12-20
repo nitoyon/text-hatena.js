@@ -23,6 +23,30 @@ CPAN ¤Ç¸ø³«¤µ¤ì¤Æ¤¤¤ë [Text::Hatena](http://search.cpan.org/dist/Text-Hatena/) ¤
     // </div>"
 
 
+³«È¯
+----
+
+grunt ¤ò»È¤¦¤³¤È¤Ç¸úÎ¨Åª¤Ë³«È¯¤Ç¤­¤ë¡£
+
+  1. node.js ¤ò¥¤¥ó¥¹¥È¡¼¥ë¡£
+  2. `npm install -g grunt` ¤Ç grunt ¤ò¥¤¥ó¥¹¥È¡¼¥ë¡£
+  3. [PhantomJS](http://phantomjs.org/) ¤ò¥Ñ¥¹¤¬ÄÌ¤Ã¤¿¾ì½ê¤Ë¥¤¥ó¥¹¥È¡¼¥ë¡£
+
+lint ¤È QUnit ¤Ë¤è¤ë¥Æ¥¹¥È¤ò¼Â¹Ô¤¹¤ë¾ì¹ç:
+
+    $ grunt
+
+¤¿¤À¤·¡¢Windows ¤Î¾ì¹ç¤Ï `grunt.cmd` ¤ò¼Â¹Ô¤¹¤ë¡£
+
+¥Æ¥¹¥È¤Î¤ß¤ò¼Â¹Ô¤¹¤ë¾ì¹ç:
+
+    $ grunt qunit
+
+¥Õ¥¡¥¤¥ëÊÑ¹¹»þ¤Ë¼«Æ°Åª¤Ë lint ¤È¥Æ¥¹¥È¤ò¼Â¹Ô¤¹¤ë¾ì¹ç:
+
+    $ grunt default watch
+
+
 ¥é¥¤¥»¥ó¥¹
 ----------
 
