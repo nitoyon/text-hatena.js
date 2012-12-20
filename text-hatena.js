@@ -529,7 +529,7 @@ Hatena.SuperpreNode.prototype = extend(new Hatena.PreNode(), {
 	},
 
 	escape_pre : function(s){
-		return String.escapeHTML(s);
+		return escapeHTML(s);
 	}
 })
 
