@@ -81,7 +81,26 @@ test( "list test", function() {
 		'\t<li>a',
 		'\t<ul>',
 		'\t\t<li>b</li>',
+		'\t</ul>',
 		'\t</li>',
+		'</ul>']);
+	text_equal("-a\n--b\n-c", [
+		'<ul>',
+		'\t<li>a',
+		'\t<ul>',
+		'\t\t<li>b</li>',
+		'\t</ul>',
+		'\t</li>',
+		'\t<li>c</li>',
+		'</ul>']);
+	text_equal("-a\n++b\n-c", [
+		'<ul>',
+		'\t<li>a',
+		'\t<ol>',
+		'\t\t<li>b</li>',
+		'\t</ol>',
+		'\t</li>',
+		'\t<li>c</li>',
 		'</ul>']);
 	text_equal("-a\n\n-b", [
 		'<ul>',

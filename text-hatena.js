@@ -440,25 +440,41 @@ Hatena.ListNode.prototype = extend(new Hatena.Node(), {
 		if(!l.match(this.pattern)) return;
 		this.llevel = RegExp.$1.length;
 		var t = times("\t", this.ilevel + this.llevel - 1);
+		var text = RegExp.$2;
 		this.type = RegExp.$1.substr(0, 1) == '-' ? 'ul' : 'ol';
 
 		c.htmllines(t + "<" + this.type + ">");
-		while (l = c.nextline()) {
-			if(!l.match(this.pattern)) break;
+		c.shiftline();
+
+		while (true) {
+			l = c.nextline();
+			if(!l || !l.match(this.pattern)) {
+				if (text != null) {
+					c.htmllines(t + "\t<li>" + text + "</li>");
+				}
+				break;
+			}
+			var newtext = RegExp.$2;
+
 			if (RegExp.$1.length > this.llevel) {
-				//c.htmllines(t + "\t<li>"); bug??
+				c.htmllines(t + "\t<li>" + text);
 				var node = new Hatena.ListNode();
 				node._new({
 					context : this.context,
 					ilevel : this.ilevel
 				});
 				node.parse();
-				//c.htmllines(t + "\t</li>"); bug??
+				c.htmllines(t + "\t</li>");
+				text = null;
 			} else if(RegExp.$1.length < this.llevel) {
+				c.htmllines(t + "\t<li>" + text + "</li>");
 				break;
 			} else {
-				l = c.shiftline();
-				c.htmllines(t + "\t<li>" + RegExp.$2 + "</li>");
+				if (text != null) {
+					c.htmllines(t + "\t<li>" + text + "</li>");
+				}
+				text = newtext;
+				c.shiftline();
 			}
 		}
 		c.htmllines(t + "</" + this.type + ">");
