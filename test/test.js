@@ -51,7 +51,7 @@ test( "footnote test", function() {
 	text_equal("foo((bar))ba((z))", 
 		'<p>foo<span class="footnote"><a href="#f1" title="bar" name="fn1">*1</a></span>ba<span class="footnote"><a href="#f2" title="z" name="fn2">*2</a></span></p>',
 		['<p class="footnote"><a href="#fn1" name="f1">*1</a>: bar</p>',
-		 '<p class="footnote"><a href="#fn2" name="f2">*2</a>: z</p>']);
+		'<p class="footnote"><a href="#fn2" name="f2">*2</a>: z</p>']);
 });
 
 test( "h3 test", function() {
@@ -133,6 +133,7 @@ test( "p test", function() {
 
 test( "pre test", function() {
 	text_equal([">|", "a", "|<"], '<pre>\na\n</pre>');
+	text_equal([">|", "a|<"], '<pre>\na</pre>');
 	text_equal([">|", "a", "  b", "|<"], '<pre>\na\n  b\n</pre>');
 	text_equal([">|", '<a href="#">a</a>', "|<"], '<pre>\n<a href="#">a</a>\n</pre>');
 });
@@ -232,7 +233,7 @@ function arg_to_string(arg, indent) {
 		t += "\t";
 	}
 
-	for (var i = 0; i < lines.length; i++) {
+	for (i = 0; i < lines.length; i++) {
 		lines[i] = t + lines[i];
 	}
 	return lines.join("\n");
