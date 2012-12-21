@@ -665,21 +665,26 @@ Hatena.SectionNode.prototype = extend(new Hatena.Node(), {
 Hatena.BlockquoteNode = function(){};
 Hatena.BlockquoteNode.prototype = extend(new Hatena.SectionNode(), {
 	init : function(){
-		this.pattern = /^>>$/;
+		this.pattern = /^>(?:(https?:\/\/[A-Za-z0-9~\/._\?\&=\-%#\+:\;,\@\']+?)(?::title=([^\]]+))?)?>$/;
 		this.endpattern = /^<<$/;
 		this.childnode = ["h4", "h5", "blockquote", "dl", "list", "pre", "superpre", "table"];//, "tagline", "tag"];
-		this.startstring = "<blockquote>";
-		this.endstring = "</blockquote>";
 		this.child_node_refs = [];
 	},
 
 	parse : function(){
 		var c = this.context;
-		if(!c.nextline().match(this.pattern)) return;
+		var m = c.nextline().match(this.pattern);
+		if(!m) {
+			return;
+		}
 		c.shiftline();
+
+		var cite = m[1] || "";
+		var title = m[2] || cite;
 		var t = times("\t", this.ilevel);
 		this._set_child_node_refs();
-		c.htmllines(t + this.startstring);
+		c.htmllines(t + '<blockquote' + (cite ? ' cite="' + cite + '" title="' + title + '"' : "") + '>');
+
 		while (c.hasnext()) {
 			var l = c.nextline();
 			if (l.match(this.endpattern)) {
@@ -690,7 +695,11 @@ Hatena.BlockquoteNode.prototype = extend(new Hatena.SectionNode(), {
 			if(!node) break;
 			node.parse();
 		}
-		c.htmllines(t + this.endstring);
+
+		if (cite) {
+			c.htmllines(t + '\t<cite><a href="' + cite + '">' + title + '</a></cite>');
+		}
+		c.htmllines(t + '</blockquote>');
 	}
 });
 

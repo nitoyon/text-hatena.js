@@ -193,6 +193,16 @@ test( "blockquote test", function() {
 		'\t\t<p>b</p>',
 		'\t</blockquote>',
 		"</blockquote>"]);
+	text_equal([">http://example.com>", "a", "<<"], [
+		'<blockquote cite="http://example.com" title="http://example.com">',
+		'\t<p>a</p>',
+		'\t<cite><a href="http://example.com">http://example.com</a></cite>',
+		'</blockquote>']);
+	text_equal([">http://example.com:title=example>", "a", "<<"], [
+		'<blockquote cite="http://example.com" title="example">',
+		'\t<p>a</p>',
+		'\t<cite><a href="http://example.com">example</a></cite>',
+		'</blockquote>']);
 });
 
 test( "tag node test", function() {
