@@ -674,12 +674,17 @@ Hatena.BlockquoteNode.prototype = extend(new Hatena.SectionNode(), {
 	parse : function(){
 		var c = this.context;
 		var m = c.nextline().match(this.pattern);
-		if(!m) return;
+		if(!m) {
+			return;
+		}
 		c.shiftline();
-		var cite = m[1] || "", title = m[2] || cite;
+
+		var cite = m[1] || "";
+		var title = m[2] || cite;
 		var t = times("\t", this.ilevel);
 		this._set_child_node_refs();
 		c.htmllines(t + '<blockquote' + (cite ? ' cite="' + cite + '" title="' + title + '"' : "") + '>');
+
 		while (c.hasnext()) {
 			var l = c.nextline();
 			if (l.match(this.endpattern)) {
@@ -690,8 +695,10 @@ Hatena.BlockquoteNode.prototype = extend(new Hatena.SectionNode(), {
 			if(!node) break;
 			node.parse();
 		}
-		if (cite)
-			c.htmllines(t + '\t<cite><a href="' + cite + '">' + title + '</a></cite>')
+
+		if (cite) {
+			c.htmllines(t + '\t<cite><a href="' + cite + '">' + title + '</a></cite>');
+		}
 		c.htmllines(t + '</blockquote>');
 	}
 });
