@@ -557,7 +557,7 @@ Hatena.SuperpreNode.prototype = extend(new Hatena.PreNode(), {
 		c.shiftline();
 		var t = times("\t", this.ilevel);
 		if (m[1]) {
-			var _class = m[1] === "aa" ? "ascii-art" : "syntax-highlight lang-" + m[1];
+			var _class = m[1] === "aa" ? "ascii-art" : "syntax-highlight prettyprint lang-" + m[1];
 			c.htmllines(t + '<pre class="' + _class + '">');
 		} else {
 			c.htmllines(t + '<pre>');
