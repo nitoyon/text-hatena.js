@@ -615,7 +615,7 @@ Hatena.SectionNode.prototype = extend(new Hatena.Node(), {
 		this.childnode = ["h5", "h4", "h3", "blockquote", "dl", "list", "pre", "superpre", "table", "tagline", "tag"];
 		this.startstring = '<div class="section">';
 		this.endstring = '</div>';
-		this.child_node_refs = Array();
+		this.child_node_refs = [];
 	},
 
 	parse : function(){
@@ -642,13 +642,13 @@ Hatena.SectionNode.prototype = extend(new Hatena.Node(), {
 			context : c,
 			ilevel : this.ilevel + 1
 		};
-		var invalid = Array();
+		var invalid = [];
 		if(c.invalidnode) { invalid[c.invalidnode] = []; }
 		for(var i = 0; i <  this.childnode.length; i++) {
 			var node = this.childnode[i];
 			if(invalid[node]) { continue; }
-			var mod = Hatena[node.charAt(0).toUpperCase() + node.substr(1).toLowerCase() + 'Node'];
-			var n = new mod();
+			var Module = Hatena[node.charAt(0).toUpperCase() + node.substr(1).toLowerCase() + 'Node'];
+			var n = new Module();
 			n._new(nodeoption);
 			this.child_node_refs.push(n);
 		}
@@ -735,7 +735,7 @@ Hatena.TagNode.prototype = extend(new Hatena.SectionNode(), {
 		this.pattern = /^>(<.*)$/;
 		this.endpattern = /^(.*>)<$/;
 		this.childnode = ["h4", "h5", "blockquote", "dl", "list", "pre", "superpre", "table"];
-		this.child_node_refs = Array();
+		this.child_node_refs = [];
 	},
 
 	parse : function(){
@@ -776,7 +776,7 @@ Hatena.TaglineNode = function(){};
 Hatena.TaglineNode.prototype = extend(new Hatena.SectionNode(), {
 	init : function(){
 		this.pattern = /^>(<.*>)<$/;
-		this.child_node_refs = Array();
+		this.child_node_refs = [];
 	},
 
 	parse : function(){

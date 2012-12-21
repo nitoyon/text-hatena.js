@@ -11,7 +11,11 @@ grunt.initConfig({
 	},
 	jshint: {
 		options: {
-			curly: true
+			curly: true,
+			newcap: true,
+			noarg: true,
+			undef: true,
+			unused: true
 		}
 	},
 	watch: {
