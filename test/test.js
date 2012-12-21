@@ -52,6 +52,9 @@ test( "footnote test", function() {
 		'<p>foo<span class="footnote"><a href="#f1" title="bar" name="fn1">*1</a></span>ba<span class="footnote"><a href="#f2" title="z" name="fn2">*2</a></span></p>',
 		['<p class="footnote"><a href="#fn1" name="f1">*1</a>: bar</p>',
 		'<p class="footnote"><a href="#fn2" name="f2">*2</a>: z</p>']);
+  text_equal(["foo((bar", "baz))hoge"], ['<p>foo((bar</p>','<p>baz))hoge</p>']);
+  text_equal("foo(((bar)))baz", '<p>foo(((bar)))baz</p>');
+  text_equal("foo)((bar))(baz", '<p>foo((bar))baz</p>');
 });
 
 test( "h3 test", function() {

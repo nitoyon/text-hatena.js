@@ -37,31 +37,16 @@ var Hatena = function(args){
 		sectionanchor : args.sectionanchor || 'o-',
 		texthandler : args.texthandler || function(text, c){
 			// footnote
-			var p = c.permalink;
-			var html = "";
-			var foot = text.split("((");
-			for(var i = 0; i < foot.length; i++){
-				if(i === 0){
-					html += foot[i];
-					continue;
+			var html = text.replace(/(.)?\(\(([^(].*?)\)\)(.)?/g, function(all, first, note, end){
+				if (first === "(" && end === ")") {
+					return all;
+				} else if (first === ")" && end === "(") {
+					return "((" + note + "))";
 				}
-				var s = foot[i].split("))", 2);
-				if(s.length != 2){
-					html += "((" + foot[i];
-					continue;
-				}
-				var pre = foot[i - i];
-				var note = s[0];
-				var post = foot[i].substr(s[0].length + 2);
-				if(pre.match(/\)$/) && post.match(/^\(/)){
-					html += "((" + post;
-				} else {
-					var num = c.footnotes.push(note);
-					note = note.replace(/<.*?>/g, "");
-					note = note.replace(/&/g, "&amp;");
-					html += '<span class="footnote"><a href="' + p + '#f' + num + '" title="' + note + '" name="fn' + num + '">*' + num + '</a></span>' + post;
-				}
-			}
+				var num = c.footnotes.push(note);
+				note = note.replace(/<.*?>/g, "").replace(/&/g, "&amp;");
+				return first + '<span class="footnote"><a href="' + c.permalink + '#f' + num + '" title="' + note + '" name="fn' + num + '">*' + num + '</a></span>' + end;
+			});
 			return html;
 		}
 	});
