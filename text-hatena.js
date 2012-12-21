@@ -511,11 +511,16 @@ Hatena.PreNode.prototype = extend(new Hatena.Node(), {
 	},
 
 	parse : function(){
-		c = this.context;
+		var c = this.context;
 		if(!c.nextline().match(this.pattern)) return;
 		c.shiftline();
 		var t = times("\t", this.ilevel);
 		c.htmllines(t + this.startstring);
+		this.parseContents();
+	},
+
+	parseContents : function(){
+		var c = this.context;
 		var x = '';
 		while (c.hasnext()) {
 			var l = c.nextline();
@@ -537,10 +542,27 @@ Hatena.PreNode.prototype = extend(new Hatena.Node(), {
 Hatena.SuperpreNode = function(){};
 Hatena.SuperpreNode.prototype = extend(new Hatena.PreNode(), {
 	init : function(){
-		this.pattern = /^>\|\|$/;
+		this.pattern = /^>\|(\w+)?\|$/;
 		this.endpattern = /^\|\|<$/;
 		this.startstring = "<pre>";
 		this.endstring = "</pre>";
+	},
+
+	parse : function(){
+		var c = this.context;
+		var m = c.nextline().match(this.pattern);
+		if (!m) {
+			return;
+		}
+		c.shiftline();
+		var t = times("\t", this.ilevel);
+		if (m[1]) {
+			var _class = m[1] === "aa" ? "ascii-art" : "syntax-highlight lang-" + m[1];
+			c.htmllines(t + '<pre class="' + _class + '">');
+		} else {
+			c.htmllines(t + '<pre>');
+		}
+		this.parseContents();
 	},
 
 	escape_pre : function(s){
