@@ -13,9 +13,7 @@ grunt.initConfig({
 		options: {
 			curly: true,
 			newcap: true,
-			noarg: true,
-			undef: true,
-			unused: true
+			noarg: true
 		}
 	},
 	watch: {

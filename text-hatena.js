@@ -354,7 +354,6 @@ Hatena.H3Node.prototype = extend(new Hatena.Node(), {
 		var name = RegExp.$1;
 		var cat = RegExp.$2;
 		var title = RegExp.$3;
-		var b = c.baseuri;
 		var p = c.permalink;
 		var t = times("\t", this.ilevel);
 		var sa = c.sectionanchor;
@@ -580,7 +579,7 @@ Hatena.TableNode.prototype = extend(new Hatena.Node(), {
 		this.pattern = /^\|([^\|]*\|(?:[^\|]*\|)+)$/;
 	},
 
-	parse : function(s){
+	parse : function(){
 		var c = this.context;
 		var l = c.nextline();
 		if(!l.match(this.pattern)) { return; }
