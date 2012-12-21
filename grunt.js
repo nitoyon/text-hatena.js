@@ -9,6 +9,11 @@ grunt.initConfig({
 	lint: {
 		all: [ '**/*.js' ]
 	},
+	jshint: {
+		options: {
+			curly: true
+		}
+	},
 	watch: {
 		files: '**/*.js',
 		tasks: 'default'
