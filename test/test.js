@@ -142,6 +142,8 @@ test( "super pre test", function() {
 	text_equal([">||", "a", "||<"], '<pre>\na\n</pre>');
 	text_equal([">||", "a < 3", "||<"], '<pre>\na &lt; 3\n</pre>');
 	text_equal([">||", "a", "", "b", "||<"], '<pre>\na\n\nb\n</pre>');
+	text_equal([">|javascript|", "a", "||<"], '<pre class="syntax-highlight prettyprint lang-javascript">\na\n</pre>');
+	text_equal([">|aa|", "art", "||<"], '<pre class="ascii-art">\nart\n</pre>');
 });
 
 test( "table test", function() {
