@@ -41,6 +41,7 @@ var Hatena = function(args){
 		ilevel : args.ilevel || 0,
 		invalidnode : args.invalidnode || [],
 		sectionanchor : args.sectionanchor || 'o-',
+		linktarget : args.linktarget || '_blank',
 		texthandler : args.texthandler || function(text, c){
 			// footnote
 			var html = text.replace(/(.)?\(\(([^(].*?)\)\)(.)?/g, function(all, first, note, end){
@@ -66,6 +67,7 @@ Hatena.prototype = {
 			categorylinkformat: this.categorylinkformat,
 			invalidnode : this.invalidnode,
 			sectionanchor : this.sectionanchor,
+			linktarget : this.linktarget,
 			texthandler : this.texthandler
 		});
 		var c = this.context;
@@ -130,6 +132,7 @@ Hatena.Context = function(args){
 		categorylinkformat: args.categorylinkformat,
 		invalidnode : args.invalidnode,
 		sectionanchor : args.sectionanchor,
+		linktarget : args.linktarget,
 		texthandler : args.texthandler,
 		_htmllines : [],
 		footnotes : [],
@@ -284,11 +287,15 @@ Hatena.DlNode.prototype = extend({}, Hatena.Node.prototype, {
 		var t = times("\t", this.ilevel);
 
 		c.htmllines(t + "<dl>");
+		var m;
 		while ((l = c.nextline())) {
-			if(!l.match(this.pattern)) { break; }
+			m = l.match(this.pattern);
+			if (!m) {
+				break;
+			}
 			c.shiftline();
-			c.htmllines(t + "\t<dt>" + RegExp.$1 + "</dt>");
-			c.htmllines(t + "\t<dd>" + RegExp.$2 + "</dd>");
+			c.htmllines(t + "\t<dt>" + Hatena.AutoLink(m[1], c) + "</dt>");
+			c.htmllines(t + "\t<dd>" + Hatena.AutoLink(m[2], c) + "</dd>");
 		}
 		c.htmllines(t + "</dl>");
 	}
@@ -313,7 +320,7 @@ Hatena.FootnoteNode.prototype = extend({}, Hatena.Node.prototype, {
 		for(var i = 0; i < c.footnotes.length; i++) {
 			var note = c.footnotes[i];
 			num++;
-			text.parse(note);
+			text.parse(Hatena.AutoLink(note, c));
 			var l = t + '\t<p class="footnote"><a href="' + p + '#fn' + num + '" name="f' + num + '">*' + num + '</a>: ' +
 				text.html() + '</p>';
 			this._html += l + "\n";
@@ -403,7 +410,7 @@ Hatena.H4Node.prototype = extend({}, Hatena.Node.prototype, {
 		if(!l) { return; }
 		if(!l.match(this.pattern)) { return; }
 		var t = times("\t", this.ilevel);
-		c.htmllines(t + "<h4>" + RegExp.$1 + "</h4>");
+		c.htmllines(t + "<h4>" + Hatena.AutoLink(RegExp.$1, c) + "</h4>");
 	}
 });
 
@@ -422,7 +429,7 @@ Hatena.H5Node.prototype = extend({}, Hatena.Node.prototype, {
 		if(!l) { return; }
 		if(!l.match(this.pattern)) { return; }
 		var t = times("\t", this.ilevel);
-		c.htmllines(t + "<h5>" + RegExp.$1 + "</h5>");
+		c.htmllines(t + "<h5>" + Hatena.AutoLink(RegExp.$1, c) + "</h5>");
 	}
 });
 
@@ -451,14 +458,14 @@ Hatena.ListNode.prototype = extend({}, Hatena.Node.prototype, {
 			l = c.nextline();
 			if(!l || !l.match(this.pattern)) {
 				if (text) {
-					c.htmllines(t + "\t<li>" + text + "</li>");
+					c.htmllines(t + "\t<li>" + Hatena.AutoLink(text, c) + "</li>");
 				}
 				break;
 			}
 			var newtext = RegExp.$2;
 
 			if (RegExp.$1.length > this.llevel) {
-				c.htmllines(t + "\t<li>" + text);
+				c.htmllines(t + "\t<li>" + Hatena.AutoLink(text, c));
 				var node = new Hatena.ListNode({
 					context : this.context,
 					ilevel : this.ilevel
@@ -467,11 +474,11 @@ Hatena.ListNode.prototype = extend({}, Hatena.Node.prototype, {
 				c.htmllines(t + "\t</li>");
 				text = null;
 			} else if(RegExp.$1.length < this.llevel) {
-				c.htmllines(t + "\t<li>" + text + "</li>");
+				c.htmllines(t + "\t<li>" + Hatena.AutoLink(text, c) + "</li>");
 				break;
 			} else {
 				if (text) {
-					c.htmllines(t + "\t<li>" + text + "</li>");
+					c.htmllines(t + "\t<li>" + Hatena.AutoLink(text, c) + "</li>");
 				}
 				text = newtext;
 				c.shiftline();
@@ -490,7 +497,7 @@ Hatena.PNode.prototype = extend({}, Hatena.Node.prototype, {
 		var t = times("\t", this.ilevel);
 		var l = c.shiftline();
 		var text = new Hatena.Text({context : c});
-		text.parse(l);
+		text.parse(Hatena.AutoLink(l, c));
 		l = text.html();
 		c.htmllines(t + "<p>" + l + "</p>");
 	}
@@ -523,7 +530,7 @@ Hatena.PreNode.prototype = extend({}, Hatena.Node.prototype, {
 		while (c.hasnext()) {
 			var l = c.nextline();
 			if (l.match(this.endpattern)) {
-				x = RegExp.$1;
+				x = Hatena.AutoLink(RegExp.$1, c);
 				c.shiftline();
 				break;
 			}
@@ -532,7 +539,7 @@ Hatena.PreNode.prototype = extend({}, Hatena.Node.prototype, {
 		c.htmllines(x + this.endstring);
 	},
 
-	escape_pre : function(text){ return text; }
+	escape_pre : function(text){ return Hatena.AutoLink(text, this.context); }
 });
 
 
@@ -594,9 +601,9 @@ Hatena.TableNode.prototype = extend({}, Hatena.Node.prototype, {
 			for (var i = 0; i < td.length; i++) {
 				var item = td[i];
 				if (item.match(/^\*(.*)/)) {
-					c.htmllines(t + "\t\t<th>" + RegExp.$1 + "</th>");
+					c.htmllines(t + "\t\t<th>" + Hatena.AutoLink(RegExp.$1, c) + "</th>");
 				} else {
-					c.htmllines(t + "\t\t<td>" + item + "</td>");
+					c.htmllines(t + "\t\t<td>" + Hatena.AutoLink(item, c) + "</td>");
 				}
 			}
 			c.htmllines(t + "\t</tr>");
@@ -781,7 +788,7 @@ Hatena.TaglineNode.prototype = extend({}, Hatena.SectionNode.prototype, {
 		var t = times("\t", this.ilevel);
 		if(!c.nextline().match(this.pattern)) { return; }
 		c.shiftline();
-		c.htmllines(t + RegExp.$1);
+		c.htmllines(t + Hatena.AutoLink(RegExp.$1, c));
 	}
 });
 
@@ -803,6 +810,260 @@ Hatena.Text.prototype = {
 	html : function(){return this._html;}
 };
 
+// Hatena::AutoLink
+Hatena.AutoLink = (function(){
+	var hatenaContext = null;
+	var inAnchor = false;
+	/**
+	 * 属性群のオブジェクトを文字列に文字列に変換
+	 * XXX: IE8 がプロパティ名の"class"を予約後だと言ってエラーになるので、"_class" とする
+	 * @param {Object} attrs
+	 *                 { attributeName: attributeValue, ... }
+	 * @return {String}
+	 */
+	var attrToSting = function (attrs) {
+		var str = "";
+		for (var attrName in attrs) {
+			str += ' ' + (attrName === "_class" ? "class" : attrName) + '="' + escapeHTML(attrs[attrName]) + '"';
+		}
+		return str;
+	};
+	/**
+	 * A 要素の生成
+	 * @param {String} url       A.href
+	 * @param {String} text      A 要素の内容
+	 * @param {Object} attrs
+	 * @param {Boolean} isEmail
+	 * @return {String}
+	 */
+	var createLink = function (url, text, attrs, isEmail) {
+		if (!attrs) {
+			attrs = {};
+		}
+		if (!isEmail && hatenaContext.linktarget) {
+			attrs.target = hatenaContext.linktarget;
+		}
+		return '<a href="' + url + '"' + attrToSting(attrs) + '>' + text + '</a>';
+	};
+	var IMAGE_TYPE = {
+		NORMAL: 0,
+		BOOKMARK: 1,
+		SCREENSHOT: 2
+	};
+	/**
+	 * IMG 要素の生成
+	 * @param {String} url   画像のURL
+	 * @param {String} meta  `:image` 後のメタデータ
+	 * @param {Number} type  参照: {@link IMAGE_TYPE}
+	 * @return {String}
+	 */
+	var createImage = function (url, meta, type) {
+		var items = (meta || "").split(/\W/);
+		var attrs;
+		var item;
+		switch (type) {
+			case IMAGE_TYPE.SCREENSHOT:
+				attrs = { _class: "http-screenshot", width: 120, height: 90 };
+				for (var i = 0, len = items.length; i < len; ++i) {
+					item = items[i];
+					if (item === "left" || item === "right") {
+						attrs._class += " hatena-image-" + item;
+					} else if (item === "large") {
+						attrs.width = 200;
+						attrs.height = 150;
+					} else if (item === "small") {
+						attrs.width = 80;
+						attrs.height = 60;
+					}
+				}
+				url = 'http://mozshot.nemui.org/shot/' + attrs.width + 'x' + attrs.height + '?' + encodeURIComponent(url);
+				break;
+			case IMAGE_TYPE.BOOKMARK:
+				attrs = { _class: "http-bookmark" };
+				break;
+			case IMAGE_TYPE.NORMAL:
+			default:
+				attrs = { _class: "hatena-image" };
+				for (var i = 0, len = items.length; i < len; ++i) {
+					item = items[i];
+					if (item[0] === "w") {
+						attrs.width = item.substr(1);
+					} else if (item[0] === "h") {
+						attrs.height = item.substr(1);
+					} else if (item === "left" || item === "right") {
+						attrs._class += " hatena-image-" + item;
+					}
+				}
+		}
+		return '<img src="' + url + '"' + attrToSting(attrs) + ' />';
+	};
+	/**
+	 * はてなブックマークカウントの画像を生成
+	 * @param {String} url 対象URL
+	 * @return {String}
+	 */
+	var createHatenaBookmarkCountImage = function(url) {
+		return createLink("http://b.hatena.ne.jp/entry/" + url,
+						createImage("http://b.hatena.ne.jp/entry/image/" + url, "", IMAGE_TYPE.BOOKMARK),
+						{ _class: "http-bookmark" });
+	};
+	/**
+	 * @type RegExp
+	 *
+	 * autoLinker と共に使用する
+	 *
+	 *  1: (?:<(\/?\w+)[^>]*>) : タグ部分の検出（リンク対象外）
+	 *  2: \[\](.+?)\[\]       : 自動リンクの無効化の書式（リンク対象外）
+	 *  3: (?:\[([^\]]+)\])    : [....] の自動リンク部分を大まかに検出。
+	 *  4: ((?:https?|ftp):\/\/[A-Za-z0-9~\/._\?\&=\-%#\+:\;,\@\']+)
+	 *                         : `[...]` に含まれない URL の検出
+	 *  5: (mailto:\w[\w\.-]+\@\w[\w\.\-]*\w)
+	 *                         : `[...]` に含まれない E-Mail の検出
+	 *
+	 * @see autoLinker
+	 * @see Hatena.AutoLink
+	 */
+	var linkDetectPattern = /(?:<(\/?\w+)[^>]*>)|\[\](.+?)\[\]|(?:\[([^\]]+)\])|((?:https?|ftp):\/\/[A-Za-z0-9~\/._\?\&=\-%#\+:\;,\@\']+)|(mailto:\w[\w\.-]+\@\w[\w\.\-]*\w)/g;
+	/**
+	 * String#replace の第2引数となる関数
+	 * @param {String} all            検出された部分の全文字列
+	 * @param {String|void} tagName   タグ名。A 要素内であるか判定するために
+	 * @param {String|void} dontLink  `[]...[]`
+	 * @param {String|void} inBracket `[...]` 部分。実際のリンク化は {@link bracketLink} で。
+	 * @param {String|void} url       https? または ftp の URL
+	 * @param {String|void} email     mailto:... の mail URI
+	 *
+	 * @return {String} 該当部分の置換結果
+	 *
+	 * @see linkDetectPattern
+	 * @see Hatena.AutoLink
+	 */
+	var autoLinker = function(all, tagName, dontLink, inBracket, url, email){
+		if (tagName) {
+			switch (tagName) {
+				case "a":
+					inAnchor = true;
+					break;
+				case "/a":
+					inAnchor = false;
+					break;
+			}
+			return all;
+		} else if (dontLink) {
+			return dontLink;
+		}
+		if (inAnchor) {
+			return all;
+		} else if (url) {
+			return createLink(url, url);
+		} else if (email) {
+			return createLink(email, email.substr(7), null, true);
+		}
+		return bracketLink(inBracket);
+	};
+	var httpNormalPattern = /(:title)(?:=(.*?))?(:bookmark)?$|(:bookmark)(?:(:title)(?:=(.*)))?$/;
+	var httpImagePattern = /(\.jpe?g|png|gif|bmp)?:image(?:=(https?:\/\/.+?))?(?::(.*))?$/;
+	/**
+	 * `[ .... ]` 内をリンクにして返す
+	 * @param {String} text
+	 * @return {String}
+	 *
+	 * @see autoLinker
+	 */
+	var bracketLink = function (text) {
+		var t = text.split(":");
+		var url;
+		var title;
+		var query;
+		var m;
+		switch (t[0]) {
+			case "http":
+			case "https":
+				// 画像リンク
+				m = text.match(httpImagePattern);
+				if (m) {
+					url = text.substr(0, m.index) + m[1];
+					if (m[2]) { // 画像へのURLが指定されている場合
+						return createLink(url, createImage(m[2], m[3]), { _class: "http-image" });
+					} else if (m[1]) { // url が画像である場合
+						return createLink(url, createImage(url, m[3]), { _class: "http-image" });
+					} else { // それ以外はスクリーンショット
+						return createLink(url, createImage(url, m[3], IMAGE_TYPE.SCREENSHOT), { _class: "http-screenshot" });
+					}
+				}
+				// 通常リンク
+				m = text.match(httpNormalPattern);
+				if (m) {
+					url = text.substr(0, m.index);
+					if (m[1]) {
+						return createLink(url, m[2] ? m[2] : url + ":title") + (m[3] ? createHatenaBookmarkCountImage(url) : "");
+					} else if (m[4]) {
+						return createHatenaBookmarkCountImage(url) + (m[5] ? createLink(url, m[6] ? m[6] : url + ":title") : "");
+					}
+					return createLink(url, url);
+				}
+				// TODO: 動画リンク :movie
+				// TODO: 音声リンク :sound
+				return createLink(text, text);
+			case "ftp":
+				return createLink(text, text);
+			case "mailto":
+				return createLink(text, t.slice(1).join(":"), true)
+			case "google":
+				switch (t[1]) {
+					case "image":
+						query = t.slice(2).join(":");
+						url = "http://images.google.com/images?q=";
+						break;
+					case "news":
+						query = t.slice(2).join(":");
+						url = "https://news.google.com/news?q=";
+						break;
+					default:
+						query = t.slice(1).join(":");
+						url = "https://www.google.com/search?q=";
+				}
+				url += encodeURIComponent(query) + '&ie=utf-8&oe=utf-8';
+				return createLink(url, text);
+			case "map":
+				m = text.match(/^map:x([\d\.]+)y([\d\.]+)/);
+				if (m) {
+					return createLink("http://map.hatena.ne.jp/?x" + m[1] + "&y" + m[2] + "&z=4", text);
+					// TODO: Google Map の表示等
+				}
+				break;
+			case "amazon":
+				url = "http://www.amazon.co.jp/exec/obidos/external-search?mode=blended&keyword=" +
+							encodeURIComponent(t.slice(1).join(":"));
+				return createLink(url, text);
+			case "wikipedia":
+				var lang = "ja";
+				if (/^[a-z]+$/.test(t[1])) {
+					lang = t[1];
+					query = t.slice(2).join(":");
+				} else {
+					query = t.slice(1).join(":");
+				}
+				url = "http://" + lang + ".wikipedia.org/wiki/" + encodeURIComponent(query);
+				return createLink(url, text);
+		}
+		return "[" + text + "]";
+	};
+	/**
+	 * @id Hatena.AutoLink
+	 * @param {String} text
+	 * @param {Hatena.Context} context
+	 */
+	var AutoLink = function(text, context){
+		if (!text) {
+			return "";
+		}
+		hatenaContext = context;
+		inAnchor = 0;
+		return text.replace(linkDetectPattern, autoLinker);
+	};
+	return AutoLink;
+}());
 
 // Hatena クラスを TextHatena として公開
 global.TextHatena = Hatena;
