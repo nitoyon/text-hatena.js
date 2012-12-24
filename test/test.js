@@ -227,6 +227,96 @@ test( "tag line node test", function() {
 	text_equal("><center>test</center><", "<center>test</center>");
 });
 
+test( "auto link test", function() {
+	text_equal('<a href=""><b>foo</b></a>', '<p><a href=""><b>foo</b></a></p>');
+	text_equal("[][http://example.com][]", "<p>[http://example.com]</p>");
+	text_equal("[http://example.com]", '<p><a href="http://example.com" target="_blank">http://example.com</a></p>');
+	text_equal("[http://example.com:title=example]", '<p><a href="http://example.com" target="_blank">example</a></p>');
+	text_equal("[http://example.com:bookmark]", [
+		'<p>',
+		'<a href="http://b.hatena.ne.jp/entry/http://example.com" class="http-bookmark" target="_blank">',
+		'<img src="http://b.hatena.ne.jp/entry/image/http://example.com" class="http-bookmark" />',
+		'</a>',
+		'</p>'
+	].join(""));
+	text_equal("[http://example.com:title=example:bookmark]", [
+		'<p>',
+		'<a href="http://example.com" target="_blank">example</a>',
+		'<a href="http://b.hatena.ne.jp/entry/http://example.com" class="http-bookmark" target="_blank">',
+		'<img src="http://b.hatena.ne.jp/entry/image/http://example.com" class="http-bookmark" />',
+		'</a>',
+		'</p>'
+	].join(""));
+	text_equal("[http://example.com:bookmark:title=example]", [
+		'<p>',
+		'<a href="http://b.hatena.ne.jp/entry/http://example.com" class="http-bookmark" target="_blank">',
+		'<img src="http://b.hatena.ne.jp/entry/image/http://example.com" class="http-bookmark" />',
+		'</a>',
+		'<a href="http://example.com" target="_blank">example</a>',
+		'</p>'
+	].join(""));
+	text_equal("[mailto:foo@example.com]", '<p><a href="mailto:foo@example.com">foo@example.com</a></p>');
+	text_equal("[google:はてな:Hatena]", [
+		'<p><a href="https://www.google.com/search?q=',
+		encodeURIComponent("はてな:Hatena"),
+		'&ie=utf-8&oe=utf-8" target="_blank">google:はてな:Hatena</a></p>'
+	].join(""));
+	text_equal("[google:image:はてな:Hatena]", [
+		'<p><a href="http://images.google.com/images?q=',
+		encodeURIComponent("はてな:Hatena"),
+		'&ie=utf-8&oe=utf-8" target="_blank">google:image:はてな:Hatena</a></p>'
+	].join(""));
+	text_equal("[google:news:はてな:Hatena]", [
+		'<p><a href="https://news.google.com/news?q=',
+		encodeURIComponent("はてな:Hatena"),
+		'&ie=utf-8&oe=utf-8" target="_blank">google:news:はてな:Hatena</a></p>'
+	].join(""));
+	text_equal("[wikipedia:はてな]", [
+		'<p><a href="http://ja.wikipedia.org/wiki/',
+		encodeURIComponent("はてな"),
+		'" target="_blank">wikipedia:はてな</a></p>'
+	].join(""));
+	text_equal("[wikipedia:en:Hatena]",
+		'<p><a href="http://en.wikipedia.org/wiki/Hatena" target="_blank">wikipedia:en:Hatena</a></p>');
+	text_equal("[amazon:はてな]", [
+		'<p><a href="http://www.amazon.co.jp/exec/obidos/external-search?mode=blended&keyword=',
+		encodeURIComponent("はてな"),
+		'" target="_blank">amazon:はてな</a></p>'
+	].join(""));
+	text_equal("**H4[http://example.com:title=example]",
+		'<h4>H4<a href="http://example.com" target="_blank">example</a></h4>');
+	text_equal("***H5[http://example.com:title=example]",
+		'<h5>H5<a href="http://example.com" target="_blank">example</a></h5>');
+	text_equal("-[http://example.com:title=example]", [
+		'<ul>',
+		'\t<li><a href="http://example.com" target="_blank">example</a></li>',
+		'</ul>'
+	]);
+	text_equal('><div>[http://example.com:title=example]</div><',
+		'<div><a href="http://example.com" target="_blank">example</a></div>');
+	text_equal([">|", "[http://example.com:title=example]", "|<"],
+		'<pre>\n<a href="http://example.com" target="_blank">example</a>\n</pre>');
+	text_equal(":[http://example.com:title=dt]:[http://example.com:title=dd]", [
+			'<dl>',
+			'\t<dt><a href="http://example.com" target="_blank">dt</a></dt>',
+			'\t<dd><a href="http://example.com" target="_blank">dd</a></dd>',
+			'</dl>'
+		]);
+	text_equal("|*[http://example.com:title=th]|th|\n|[http://example.com:title=td]|td|", [
+		'<table>',
+		'\t<tr>',
+		'\t\t<th><a href="http://example.com" target="_blank">th</a></th>',
+		'\t\t<td>th</td>',
+		'\t</tr>',
+		'\t<tr>',
+		'\t\t<td><a href="http://example.com" target="_blank">td</a></td>',
+		'\t\t<td>td</td>',
+		'\t</tr>',
+		'</table>']);
+	text_equal("foot(([http://example.com:title=example]))note",
+		'<p>foot<span class="footnote"><a href="#f1" title="example" name="fn1">*1</a></span>note</p>',
+		'<p class="footnote"><a href="#fn1" name="f1">*1</a>: <a href="http://example.com" target="_blank">example</a></p>');
+});
 
 function text_equal(source, expected, footnotes) {
 	source = arg_to_string(source);
