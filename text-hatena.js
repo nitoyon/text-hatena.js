@@ -362,7 +362,9 @@ Hatena.H3Node.prototype = extend(new Hatena.Node(), {
 		var categories = cat.substr(1, cat.length - 2).split("][");
 		for (var i = 0, len = categories.length; i < len; ++i) {
 			category = categories[i];
-			res += '[<a class="sectioncategory" href="' + this.context.categorylinkformat.replace(/%s/g, category) + '">' + category + '</a>]';
+			res += '[<a class="sectioncategory" href="' +
+				this.context.categorylinkformat.replace(/%s/g, encodeURIComponent(category)) + '">' +
+				escapeHTML(category) + '</a>]';
 		}
 		return res;
   },
