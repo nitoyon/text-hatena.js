@@ -37,6 +37,7 @@ var Hatena = function(args){
 		_html : '',
 		baseuri : args.baseuri,
 		permalink : args.permalink || "",
+		categorylinkformat: (args.baseuri || "") + (args.categorylinkformat || "searchdiary?word=*[%s]"),
 		ilevel : args.ilevel || 0,
 		invalidnode : args.invalidnode || [],
 		sectionanchor : args.sectionanchor || 'o-',
@@ -62,6 +63,7 @@ Hatena.prototype = {
 			text : text || "",
 			baseuri : this.baseuri,
 			permalink : this.permalink,
+			categorylinkformat: this.categorylinkformat,
 			invalidnode : this.invalidnode,
 			sectionanchor : this.sectionanchor,
 			texthandler : this.texthandler
@@ -125,6 +127,7 @@ Hatena.Context = function(args){
 		text : args.text,
 		baseuri : args.baseuri,
 		permalink : args.permalink,
+		categorylinkformat: args.categorylinkformat,
 		invalidnode : args.invalidnode,
 		sectionanchor : args.sectionanchor,
 		texthandler : args.texthandler,
@@ -342,20 +345,28 @@ Hatena.H3Node.prototype = extend({}, Hatena.Node.prototype, {
 		var t = times("\t", this.ilevel);
 		var sa = c.sectionanchor;
 
-		/* TODO: カテゴリは未対応
 		if (cat) {
-			if(cat.match(/\[([^\:\[\]]+)\]/)){ // 繰り返しできないなぁ...
-				var w = RegExp.$1;
-				var ew = escape(RegExp.$1);
-				cat = cat.replace(/\[([^\:\[\]]+)\]/, '[<a class="sectioncategory" href="' + b + '?word=' + ew + '">' + w + '</a>]');
-			}
-		}*/
+			cat = this._formatcategory(cat);
+		}
 		var extra = '';
 		var ret = this._formatname(name);
 		var num = (typeof ret[0] != "undefined" ? ret[0] : "");
 		extra = (typeof ret[1] != "undefined" ? ret[1] : "");
 		c.htmllines(t + '<h3><a href="' + p + '#' + num + '" name="' + num + '"><span class="sanchor">' + sa + '</span></a> ' + cat + title + '</h3>' + extra);
 	},
+
+  _formatcategory : function(cat) {
+		var res = "";
+		var category;
+		var categories = cat.substr(1, cat.length - 2).split("][");
+		for (var i = 0, len = categories.length; i < len; ++i) {
+			category = categories[i];
+			res += '[<a class="sectioncategory" href="' +
+				this.context.categorylinkformat.replace(/%s/g, encodeURIComponent(category)) + '">' +
+				escapeHTML(category) + '</a>]';
+		}
+		return res;
+  },
 
 	_formatname : function(name){
 		/* TODO: 時間も未対応。表示時の時間が表示されてしまう...

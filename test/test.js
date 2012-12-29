@@ -63,6 +63,12 @@ test( "h3 test", function() {
 	text_equal("*title1\n*title2", [
 		'<h3><a href="#p1" name="p1"><span class="sanchor">o-</span></a> title1</h3>',
 		'<h3><a href="#p2" name="p2"><span class="sanchor">o-</span></a> title2</h3>']);
+	text_equal("*[cat1][cat2]title[foo]", [
+		'<h3><a href="#p1" name="p1"><span class="sanchor">o-</span></a> ',
+		'[<a class="sectioncategory" href="searchdiary?word=*[cat1]">cat1</a>]',
+		'[<a class="sectioncategory" href="searchdiary?word=*[cat2]">cat2</a>]',
+		'title[foo]</h3>'
+	].join(""));
 });
 
 test( "h4 test", function() {
