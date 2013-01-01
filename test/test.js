@@ -228,6 +228,16 @@ test( "tag line node test", function() {
 });
 
 
+test( "option invalidnode", function() {
+	var parser = new TextHatena();
+	ok(parser.parse("*a").match(/h3/), "h3 parsed");
+	ok(parser.parse("**a").match(/h4/), "h4 parsed");
+
+	parser.invalidnode = ["h3", "h4"];
+	ok(!parser.parse("*a").match(/h3/), "h3 must be ignored");
+	ok(!parser.parse("**a").match(/h4/), "h4 must be ignored");
+});
+
 function text_equal(source, expected, footnotes) {
 	source = arg_to_string(source);
 	expected = "<div class=\"section\">\n" + arg_to_string(expected, 1) + "\n</div>";

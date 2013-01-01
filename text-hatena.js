@@ -641,9 +641,11 @@ Hatena.SectionNode.prototype = extend({}, Hatena.Node.prototype, {
 			context : c,
 			ilevel : this.ilevel + 1
 		};
-		var invalid = [];
-		if(c.invalidnode) { invalid[c.invalidnode] = []; }
-		for(var i = 0; i <  this.childnode.length; i++) {
+		var invalid = {};
+		for (var i = 0; i < c.invalidnode.length; i++) {
+			invalid[c.invalidnode[i]] = 1;
+		}
+		for(i = 0; i <  this.childnode.length; i++) {
 			var node = this.childnode[i];
 			if(invalid[node]) { continue; }
 			var Module = Hatena[node.charAt(0).toUpperCase() + node.substr(1).toLowerCase() + 'Node'];
